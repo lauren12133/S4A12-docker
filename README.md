@@ -5,7 +5,7 @@
 本地构建docker images，下载项目docker目录下dockerfile
 
 ```bash
-mkdir -p /Data/Pvf
+mkdir -p dxf/Data/Pvf/ && cd dxf
 docker build -t dxf-server:latest .  #当项目更新时重新该命令以构建最新docker镜像
 ```
 
