@@ -1,22 +1,43 @@
-FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine
+#builde
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS builder
 
-RUN apk add --no-cache \
+RUN apt update && apt install -y \
     git \
-    bash
+    bash \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /dxf \
-    && git clone --depth=1 https://codeberg.org/rewio/ServerS4A12.git /dxf/ServerS4A12
+WORKDIR /build
 
-WORKDIR /dxf/ServerS4A12
+RUN git clone --depth=1 \
+    https://codeberg.org/rewio/ServerS4A12.git \
+    ServerS4A12
 
-RUN dotnet build Server/DfoServer.sln -c Debug
+WORKDIR /build/ServerS4A12
 
-RUN cp start-server.sh Server/DfoServer/bin/Debug/ \
-    && cp -a Server/DfoServer/bin/Debug/. /dxf/ \
-    && rm -rf /dxf/ServerS4A12
+RUN ./publish.sh
+
+RUN cp start-server.sh dist/*/ \
+    && mkdir -p /output \
+    && cp -a dist/*/. /output/ \
+    && chmod +x /output/start-server.sh
+
+
+#run
+FROM debian:bookworm-slim
+
+RUN sed -i 's#deb.debian.org#mirrors.ustc.edu.cn#g' /etc/apt/sources.list.d/debian.sources \
+    && sed -i 's#security.debian.org#mirrors.ustc.edu.cn/debian-security#g' /etc/apt/sources.list.d/debian.sources
+
+RUN apt update && apt install -y \
+    bash \
+    libicu72 \
+    sqlite3 \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /dxf
 
-RUN find . -name "*.sh" -exec chmod +x {} \;
+COPY --from=builder /output/ /dxf/
+
+RUN chmod +x /dxf/start-server.sh
 
 CMD ["bash", "./start-server.sh"]
