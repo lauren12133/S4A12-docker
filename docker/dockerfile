@@ -1,0 +1,22 @@
+FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine
+
+RUN apk add --no-cache \
+    git \
+    bash
+
+RUN mkdir -p /dxf \
+    && git clone --depth=1 https://codeberg.org/rewio/ServerS4A12.git /dxf/ServerS4A12
+
+WORKDIR /dxf/ServerS4A12
+
+RUN dotnet build Server/DfoServer.sln -c Debug
+
+RUN cp start-server.sh Server/DfoServer/bin/Debug/ \
+    && cp -a Server/DfoServer/bin/Debug/. /dxf/ \
+    && rm -rf /dxf/ServerS4A12
+
+WORKDIR /dxf
+
+RUN find . -name "*.sh" -exec chmod +x {} \;
+
+CMD ["bash", "./start-server.sh"]
