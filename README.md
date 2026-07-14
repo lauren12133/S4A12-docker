@@ -6,7 +6,7 @@
 
 ```bash
 mkdir -p dxf/Data/Pvf/ && cd dxf
-docker build -t dxf-server:latest .  #当项目更新时重新该命令以构建最新docker镜像
+docker build --no-cache -t dxf-server:latest . #当项目更新时重新该命令以构建最新docker镜像
 ```
 
 将你的inventory.db上传在/Data，将你的Script.pvf上传自/Data/Pvf
