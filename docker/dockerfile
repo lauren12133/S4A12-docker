@@ -1,4 +1,5 @@
-#builde
+# Build
+
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS builder
 
 RUN apt update && apt install -y \
@@ -14,24 +15,21 @@ RUN git clone --depth=1 \
 
 WORKDIR /build/ServerS4A12
 
-RUN ./publish.sh
+RUN dotnet build Server/DfoServer.sln -c Debug
 
-RUN cp start-server.sh dist/*/ \
+
+RUN cp start-server.sh Server/DfoServer/bin/Debug/ \
+    && chmod +x Server/DfoServer/bin/Debug/start-server.sh \
     && mkdir -p /output \
-    && cp -a dist/*/. /output/ \
-    && chmod +x /output/start-server.sh
+    && cp -a Server/DfoServer/bin/Debug/. /output/
 
 
 #run
-FROM debian:bookworm-slim
 
-RUN sed -i 's#deb.debian.org#mirrors.ustc.edu.cn#g' /etc/apt/sources.list.d/debian.sources \
-    && sed -i 's#security.debian.org#mirrors.ustc.edu.cn/debian-security#g' /etc/apt/sources.list.d/debian.sources
+FROM mcr.microsoft.com/dotnet/runtime:10.0
 
 RUN apt update && apt install -y \
     bash \
-    libicu72 \
-    sqlite3 \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /dxf
