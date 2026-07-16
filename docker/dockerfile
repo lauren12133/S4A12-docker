@@ -2,11 +2,6 @@
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS builder
 
-RUN apt update && apt install -y \
-    git \
-    bash \
-    && rm -rf /var/lib/apt/lists/*
-
 WORKDIR /build
 
 RUN git clone --depth=1 \
@@ -27,10 +22,6 @@ RUN cp start-server.sh Server/DfoServer/bin/Debug/ \
 #run
 
 FROM mcr.microsoft.com/dotnet/runtime:10.0
-
-RUN apt update && apt install -y \
-    bash \
-    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /dxf
 
