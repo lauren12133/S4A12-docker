@@ -27,6 +27,7 @@ services:
 
     environment:
       SERVER_IP: 这里改成你机器ip
+      TZ: Asia/Shanghai
 EOF
 ```
 
@@ -40,6 +41,7 @@ docker run -d \
   --name dxf-server \
   --network host \
   -e SERVER_IP=这里改成你机器ip \
+  -e TZ=Asia/Shanghai \
   -v "$(pwd)/Data:/dxf/Data" \
   --restart unless-stopped \
   dxf-server:latest
