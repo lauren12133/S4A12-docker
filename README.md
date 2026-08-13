@@ -1,12 +1,16 @@
 ## Docker
 
-**使用前请确保网络环境能拉取codberg** 
-
 本地构建docker images，下载项目docker目录下dockerfile
 
 ```bash
 mkdir -p dxf/Data/Pvf/ && cd dxf
 docker build --no-cache -t dxf-server:latest . #当项目更新时重新该命令以构建最新docker镜像
+```
+
+**当你docker编译缓存占用过多的时候** 
+
+```bash
+docker system prune -a
 ```
 
 将你的inventory.db上传在/Data，将你的Script.pvf上传自/Data/Pvf
